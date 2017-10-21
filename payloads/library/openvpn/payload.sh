@@ -1,10 +1,10 @@
 #!/bin/bash
 # 
 # Title:		OpenVPN
-# Description:	Create a connection to a VPN-connection to an OpenVPN-server. Optionally: Send traffic from the clients through said tunnel.
+# Description:		Create a connection to a VPN-connection to an OpenVPN-server. Optionally: Send traffic from the clients through said tunnel.
 # Author: 		SebKinne
 # Version:		1.0
-# Category: 	remote-access
+# Category: 		remote-access
 # Target: 		Any
 # Net Mode:		BRIDGE, VPN
 
