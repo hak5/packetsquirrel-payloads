@@ -1,11 +1,16 @@
 #!/bin/bash
 # 
-# Title:	TCPDump
-# Author: 	SebKinne
-# Version:	1.0
-# Category: sniffing
-# Target: 	Any
-# Net Mode:	TRANSPARENT
+# Title:		TCPDump
+# Description:	Dumps networking-data to USB storage. Completes on button-press or storage full.
+# Author: 		SebKinne
+# Version:		1.0
+# Category: 	sniffing
+# Target: 		Any
+# Net Mode:		TRANSPARENT
+
+# LEDs
+# SUCCESS:		Dump complete
+# FAIL:			No USB storage found
 
 function monitor_space() {
 	while true

