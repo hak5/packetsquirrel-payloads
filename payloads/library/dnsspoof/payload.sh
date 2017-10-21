@@ -1,5 +1,11 @@
 #!/bin/bash
-# DNSSpoof payload
+# 
+# Title:	DNSSpoof
+# Author: 	SebKinne
+# Version:	1.0
+# Category: interception
+# Target: 	Any
+# Net Mode:	NAT
 
 
 function setup() {

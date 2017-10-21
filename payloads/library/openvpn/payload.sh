@@ -1,5 +1,11 @@
 #!/bin/bash
-# OpenVPN payload
+# 
+# Title:	OpenVPN
+# Author: 	SebKinne
+# Version:	1.0
+# Category: remote-access
+# Target: 	Any
+# Net Mode:	BRIDGE, VPN
 
 # Set to 1 to allow clients to use the VPN
 FOR_CLIENTS=0

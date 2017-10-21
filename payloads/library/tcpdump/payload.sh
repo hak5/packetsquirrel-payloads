@@ -1,5 +1,11 @@
 #!/bin/bash
-# TCPDump payload v1.0
+# 
+# Title:	TCPDump
+# Author: 	SebKinne
+# Version:	1.0
+# Category: sniffing
+# Target: 	Any
+# Net Mode:	TRANSPARENT
 
 function monitor_space() {
 	while true
