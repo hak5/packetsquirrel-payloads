@@ -1,10 +1,10 @@
 #!/bin/bash
 # 
 # Title:		DNSSpoof
-# Description:	Forge replies to arbitrary DNS queries using DNSMasq
+# Description:		Forge replies to arbitrary DNS queries using DNSMasq
 # Author: 		SebKinne
 # Version:		1.0
-# Category: 	interception
+# Category: 		interception
 # Target: 		Any
 # Net Mode:		NAT
 
