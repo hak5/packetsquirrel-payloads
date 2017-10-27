@@ -19,14 +19,21 @@ function setup() {
   NETMODE TRANSPARENT
   sleep 5
 
+  # Test network
+  testNetwork
+
+  # Create loot directory
+  mkdir -p $LOOT_DIR &> /dev/null
+}
+
+function testNetwork() {
   # Sets Default Gateway
   GATEWAY_IP=$(route -n | grep 'UG[ \t]' | awk '{print $2}')
-  [ -z "${GATEWAY_IP}" ] && LED FAIL && exit 1
+  [ -z "${GATEWAY_IP}" ] && NETMODE BRIDGE && testNetwork
+  #[ -z "${GATEWAY_IP}" ] && LED FAIL && exit 1
   # Sets Network Name
   GATEWAY_NAME=$(nmap -sn $GATEWAY_IP | grep 'for' | awk '{print $5}' | cut -d '.' -f1)
   [[ -z "$GATEWAY_NAME" ]] && GATEWAY_NAME="noname"
-  # Create loot directory
-  mkdir -p $LOOT_DIR &> /dev/null
 }
 
 function attack() {
