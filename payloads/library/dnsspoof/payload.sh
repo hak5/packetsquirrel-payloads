@@ -4,7 +4,7 @@
 # Description:	Forge replies to arbitrary DNS queries using DNSMasq
 # Author: 		Hak5
 # Version:		1.0
-# Category: 	interception
+# Category: 		interception
 # Target: 		Any
 # Net Mode:		NAT
 
