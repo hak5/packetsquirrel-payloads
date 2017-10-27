@@ -2,7 +2,7 @@
 # 
 # Title:		DNSSpoof
 # Description:	Forge replies to arbitrary DNS queries using DNSMasq
-# Author: 		SebKinne
+# Author: 		Hak5
 # Version:		1.0
 # Category: 	interception
 # Target: 		Any

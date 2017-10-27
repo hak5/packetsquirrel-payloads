@@ -2,9 +2,9 @@
 # 
 # Title:		TCPDump
 # Description:	Dumps networking-data to USB storage. Completes on button-press or storage full.
-# Author: 		SebKinne
+# Author: 		Hak5
 # Version:		1.0
-# Category: 	sniffing
+# Category:		sniffing
 # Target: 		Any
 # Net Mode:		TRANSPARENT
 

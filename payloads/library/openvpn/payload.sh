@@ -2,7 +2,7 @@
 # 
 # Title:		OpenVPN
 # Description:	Create a connection to a VPN-connection to an OpenVPN-server. Optionally: Send traffic from the clients through said tunnel.
-# Author: 		SebKinne
+# Author: 		Hak5
 # Version:		1.0
 # Category: 	remote-access
 # Target: 		Any
