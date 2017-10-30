@@ -6,7 +6,7 @@
 # Version:       1.0
 # Category:      Recon
 # Target:        Any
-# Net Mode:      TRANSPARENTs
+# Net Mode:      TRANSPARENT
 #
 # See nmap --help for options. Default "-sN -vv" basic profiling of targets.
 NMAP_OPTIONS="-sN -vv"
