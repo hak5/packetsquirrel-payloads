@@ -3,6 +3,7 @@
 
 NGREP_OPTIONS=("-wiql" "user|pass" "port" "21")
 CONDITION=""
+WCNUM=3
 
 LOOT_DIR="/mnt/loot/ngrep"
 LOG_FILE="${LOOT_DIR}/ngrep-${RANDOM}.log"
@@ -28,7 +29,7 @@ function checkLog() {
 			return 0
 		}
 	} || {
-		[[ $(wc -l < $LOG_FILE) -gt 3 ]] && {
+		[[ $(wc -l < $LOG_FILE) -gt $WCNUM ]] && {
 			return 0
 		}
 	}
@@ -51,7 +52,6 @@ function run() {
 
 				sleep 3
 				
-				sync
 				LED OFF
 				halt
 			} || {
