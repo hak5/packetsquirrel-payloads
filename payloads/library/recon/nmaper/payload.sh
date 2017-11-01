@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Title:         Nmaper
+# Title:         Nmapper
 # Description:   Nmap's the entire network
 # Author:        thehappydinoa
 # Version:       1.0
@@ -10,7 +10,7 @@
 #
 # See nmap --help for options. Default "-sN -vv" basic profiling of targets.
 NMAP_OPTIONS="-sN -vv"
-LOOT_DIR=/mnt/loot/nmaper/
+LOOT_DIR=/mnt/loot/nmapper/
 
 function setup() {
   # Show SETUP LED
