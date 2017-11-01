@@ -21,6 +21,7 @@ function setup() {
 	LED OFF
 	NETMODE TRANSPARENT
 	sleep 5
+	mkdir -p $LOOT_DIR
 }
 
 function checkLog() {
@@ -37,9 +38,6 @@ function checkLog() {
 }
 
 function run() {
-	mkdir -p $LOOT_DIR
-
-	# Start ngrep
 	ngrep "${NGREP_OPTIONS[@]}" 2>&1 > $LOG_FILE &
 	npid=$!
 
@@ -67,8 +65,8 @@ function run() {
 
 [[ ! -f /mnt/NO_MOUNT ]] && {
 	setup
+	syncFS &
 	run
 } || {
-	# Fail as no USB disk is present
 	LED FAIL
 }
