@@ -24,7 +24,7 @@ spoofDevType="Cisco"					# Spoof the MAC of this device type
 
 netSleep=10						# Seconds to sleep while loading NAT
 mode="TRANSPARENT"					# Squirrel NETMOD TRANSPARENT | BRDIGE | NAT | VPN | NONE (this won't kick you off ssh session)
-onEnd="reboot"						# When done what should we do? reboot | shutdown | nothing | poweroff
+onEnd="halt"						# When done what should we do? reboot | halt | nothing | poweroff
 
 lootPath="/mnt/loot/nmapdump"				# Path to store results
 lootFileNameScheme="nmapdump_$(date +%Y-%m-%d-%H%M)"	# File name scheme 
@@ -71,15 +71,17 @@ function run() {
 	ifconfig >> $lootPath/log.txt
 
 	# Starting scanning LED (rapid white blink)
-  	LED W FAST
+  	LED W VERYFAST
 
 	# Run nmap scan with options
 
 	# Now lets figure out which interface to use.
 	iface=$(ip -o link show | awk '{print $2}')
 
-	# Now lets look at the ip addresses assigned to the various interfaces.
+	# Set ipv6 default to null
+	ipv6=""
 
+	# Now lets look at the ip addresses assigned to the various interfaces.
 	while IFS= read -r line; do
 
 		# Standardize interface name
@@ -91,36 +93,41 @@ function run() {
 			# Get IP Address for Interface.
 			ifip=$(ifconfig $line 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')
 
-			# Store for later use the ip addresses associted with interface.
-			# We don't want an empty 1st line.
-			if [ "$ipaddresses" ]; then
-				ipaddresses+=$'\n'$ifip
-			else
-				ipaddresses=$ifip
-			fi
-			
-			# If user has specified a default interface than we can disregard.
-			if [ ! "$defaultInterface" ]; then
+			# Make sure result is not null.
+			if [ "$ifip" ]; then
 
-				# Store the interface for later use.	
+				# Store for later use the ip addresses associted with interface.
 				# We don't want an empty 1st line.
-				if [ "$interfaces" ]; then
-					interfaces+=$'\n'$line
+				if [ "$ipaddresses" ]; then
+					ipaddresses+=$'\n'$ifip
 				else
-					interfaces=$line
+					ipaddresses=$ifip
 				fi
-			fi
 			
-			# convert ip to subnet
-			newSubNet=`echo $ifip | cut -d"." -f1-3`
-			newSubNet=$newSubNet".1/24"
+				# If user has specified a default interface than we can disregard.
+				if [ ! "$defaultInterface" ]; then
+
+					# Store the interface for later use.	
+					# We don't want an empty 1st line.
+					if [ "$interfaces" ]; then
+						interfaces+=$'\n'$line
+					else
+						interfaces=$line
+					fi
+				fi
+			
+				# convert ip to subnet
+				newSubNet=`echo $ifip | cut -d"." -f1-3`
+				newSubNet=$newSubNet".1/24"
 		
-			# Add subnet to list
-			# We don't want a leading empty character.
-			if [ "$newSubNet" ]; then
-				targets+=" $newSubNet"
-			else
-				targets=$newSubNet
+				# Add subnet to list
+				# We don't want a leading empty character.
+				if [ "$newSubNet" ]; then
+					targets+=" $newSubNet"
+				else
+					targets=$newSubNet
+				fi
+
 			fi	
 
 	        fi # end our test for lo
@@ -130,12 +137,19 @@ function run() {
 	# Clean up subnets to remove accidental double spaces.
 	echo "$targets" | awk '$1=$1' &> /dev/null
 
-	# Make sure we have at least something to scan.
+	# if targets is empty we have no subnets. Let's check if we can find IPv6 
 	if [ ! "$targets" ]; then
-		
-		echo "Could not accquire any IP addresses to scan." >> $lootPath/log.txt
-		exit 1
 
+		# Collect all uniqu IPv6 address that we can ping.
+		ipv6=$(ping -6 ff02::1 -w 10 2>/dev/null | awk '/from/ {print $4}' | cut -d":" -f1-6 | sort | uniq | tr "\r\n" " ")
+		if [ ! "$ipv6" ]; then
+
+			# We could not find any ipv4 address and ipv6 returned nothing.
+			echo "Could not accquire any IP addresses to scan." >> $lootPath/log.txt
+			sync
+			LED OFF
+			exit 1
+		fi
 	fi
 
 	# Add lo as some setups the loopback maybe the interface to send out traffic
@@ -151,6 +165,11 @@ function run() {
 	echo "Subnets to scan $targets" >> $lootPath/log.txt
 	echo "IPs to scan $ipaddresses" >> $lootPath/log.txt
 
+	# Document the fact we will be scanning ipv6
+	if [ "$ipv6" ]; then
+		echo "We will be scanning ipv6 addresses" >> $lootPath/log.txt
+	fi
+
 	# Now lets find the interface that will allow outbound traffic on the LAN.
 	while IFS= read -r interface; do
 
@@ -158,16 +177,33 @@ function run() {
 		while IFS= read -r ip; do
 
 			# If we can send ping packets then the interface is likley able to work with nmap
-			echo "ping -I $interface $ip -w 3"
-			if [[ ! $(ping -I $interface $ip -w 3 | grep '0 packets received') ]]; then
-			
-				# Make sure wee don't end up with a blank first line.
-				if [ "$goodInterface" ]; then
+			# Determin if we should ping in ipv4 or ipv6
+			if [ ! "$ipv6" ]; then
 
-					goodInterfaces+=$'\n'$interface
-				else
-					goodInterfaces=$interface
-				fi			
+				if [[ ! $(ping -I $interface $ip -w 3 | grep '0 packets received') ]]; then
+			
+					# Make sure wee don't end up with a blank first line.
+					if [ "$goodInterface" ]; then
+
+						goodInterfaces+=$'\n'$interface
+					else
+						goodInterfaces=$interface
+					fi			
+				fi
+
+			else
+
+				if [[ ! $(ping -6 ff02::1 -w 3 | grep '0 packets received') ]]; then
+			
+					# Make sure wee don't end up with a blank first line.
+					if [ "$goodInterface" ]; then
+
+						goodInterfaces+=$'\n'$interface
+					else
+						goodInterfaces=$interface
+					fi			
+				fi
+
 			fi
 
 		done <<< "$ipaddresses" # end loop to find interfaces we can use
@@ -182,7 +218,13 @@ function run() {
 		while IFS= read -r goodInterface; do
 
 			# Finally! Lets run NMap!
-			nmap -Pn -e $goodInterface -sS -F -sV -oA $lootPath/$lootFileNameScheme -D RND:$rndDecoyNumber --randomize-hosts --spoof-mac $spoofDevType $targets >> $lootPath/log.txt
+			# Use ipv4
+			if [ ! "$ipv6" ]; then
+				nmap -Pn -e $goodInterface -sS -F -sV -oA $lootPath/$lootFileNameScheme -D RND:$rndDecoyNumber --randomize-hosts --spoof-mac $spoofDevType $targets >> $lootPath/log.txt
+			else
+				# Use ipv6
+				nmap -Pn -e $goodInterface -sT -F -R -oA $lootPath/$lootFileNameScheme --randomize-hosts --spoof-mac $spoofDevType -6 $ipv6 >> $lootPath/log.txt
+			fi
 	
 		done <<< "$goodInterfaces"
 
