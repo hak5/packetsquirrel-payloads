@@ -15,17 +15,16 @@
 
 #### Constants ####
 
+defaultInterface=""					# If you know which interface will allow outbound traffic you can specify it here
+							# leaving it blank will enable the payload trying to attempt to figure out which
+							# interface to use.
+
 rndDecoyNumber=5					# Number of decoy IPs to spawn
 spoofDevType="Cisco"					# Spoof the MAC of this device type
 
-toLan="eth1"						# Interface out to lan
-toTarget="eth0"						# Interface to target
 netSleep=10						# Seconds to sleep while loading NAT
-mode="TRANSPARENT"					# Squirrel NETMOD
-onEnd="nothing"						# When done what should we do? reboot | shutdown | nothing | poweroff
-
-scanTargetSubNet=true					# Attempt to get subnet of target then scan it. true | false
-scanGatewaySubNet=true					# Attempt to get gateway ip and then scan it. true | false
+mode="TRANSPARENT"					# Squirrel NETMOD TRANSPARENT | BRDIGE | NAT | VPN | NONE (this won't kick you off ssh session)
+onEnd="reboot"						# When done what should we do? reboot | shutdown | nothing | poweroff
 
 lootPath="/mnt/loot/nmapdump"				# Path to store results
 lootFileNameScheme="nmapdump_$(date +%Y-%m-%d-%H%M)"	# File name scheme 
@@ -58,45 +57,15 @@ function run() {
 
 	# Create loot directory
 	mkdir -p $lootPath &> /dev/null
-
-	# Get IP subnet
-	if [ "$scanTargetSubNet" == "true" ]; then
-		
-		rawip=$(ifconfig $toLan 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')	
-		LANip=`echo $rawip | cut -d"." -f1-3`
-		LANSubNet=$LANip".1/24"
 	
-		# Log subnet to IP address
-		echo "Target subnet:$LANSubNet" >> $lootPath/log.txt
-	fi
-
-	# Get gateway subnet
-	if [ "$scanGatewaySubnet" == "true" ]; then
-
-		rawip=$(ifconfig $toTarget 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')	
-		gatewayIP=`echo $rawip | cut -d"." -f1-3`
-		gatewaySubnet=$gatewayIP".1/24"
-
-		# Log Gateway subnet
-		echo "Gateway subnet $gatewaySubnet" >> $lootPath/log.txt
-	fi
-
-	# Make sure we have at least something to scan.
-	if [ ! "$LANSubNet" ] && [ ! "$gatewaySubnet" ]; then
-		
-		echo "Could not accquire any IP addresses to scan." >> $lootPath/log.txt
-		exit 1
-
-	fi
-
-	# Concat ips, clean up and log output.
-	targets="$LANSubNet $gatewaySubnet"
-	echo "$targets" | awk '$1=$1' &> /dev/null
-	echo "IPs to scan $targets" >> $lootPath/log.txt
+	# Set networking mode to user preferance and sleep to allow time to sync up.
+	# If set to NONE this will not be set and thus not kick you out of your SSH session.
+	if [ "$mode" != "NONE" ]; then
 	
-	# Set networking to NAT and sleep to allow time to sync up.
-	NETMODE $mode
-	sleep $netSleep
+		NETMODE $mode
+		sleep $netSleep
+
+	fi 
 
 	# Log ifconfig data; helpful for troubleshooting 
 	ifconfig >> $lootPath/log.txt
@@ -109,8 +78,9 @@ function run() {
 	# Now lets figure out which interface to use.
 	iface=$(ip -o link show | awk '{print $2}')
 
-	# Got interfaces lets check them out.
-	echo "$iface" | while IFS= read -r line; do
+	# Now lets look at the ip addresses assigned to the various interfaces.
+
+	while IFS= read -r line; do
 
 		# Standardize interface name
         	line="${line//:}"
@@ -118,40 +88,110 @@ function run() {
 		# We can skip lo
         	if [ "$line" != "lo" ]; then
 
-			# For good measure let's see if this interface contains a new ip address as so far we have only checked eth0 and eth1
+			# Get IP Address for Interface.
 			ifip=$(ifconfig $line 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://')
 
-			# convert to subnet
+			# Store for later use the ip addresses associted with interface.
+			# We don't want an empty 1st line.
+			if [ "$ipaddresses" ]; then
+				ipaddresses+=$'\n'$ifip
+			else
+				ipaddresses=$ifip
+			fi
+			
+			# If user has specified a default interface than we can disregard.
+			if [ ! "$defaultInterface" ]; then
+
+				# Store the interface for later use.	
+				# We don't want an empty 1st line.
+				if [ "$interfaces" ]; then
+					interfaces+=$'\n'$line
+				else
+					interfaces=$line
+				fi
+			fi
+			
+			# convert ip to subnet
 			newSubNet=`echo $ifip | cut -d"." -f1-3`
 			newSubNet=$newSubNet".1/24"
-
-			# Let's not waste time if we already have collected this IP address
-			if [[ ! $(echo "$targets" | grep "$newSubNet") ]]; then
-
-				# It's a new subnet! Add it to list
-				targets="$targets $newSubNet"
-
-				# clean up list 
-				echo "$targets" | awk '$1=$1' &> /dev/null
-
-				# Log our new subnet
-				echo "More ips to scan $targets" >> $lootPath/log.txt
-			fi			
-	
-			# Now let's test if this interface allows outbound traffic
-			if [[ ! $(ping -I $line 8.8.8.8 -w 3 | grep '0 packets received') ]]; then
-			
-				# Yes! This interface allows outbound traffic; lets run NMap!
-				nmap -Pn -e $line -sS -F -sV -oA $lootPath/$lootFileNameScheme -D RND:$rndDecoyNumber --randomize-hosts --spoof-mac $spoofDevType $targets >> $lootPath/log.txt
+		
+			# Add subnet to list
+			# We don't want a leading empty character.
+			if [ "$newSubNet" ]; then
+				targets+=" $newSubNet"
 			else
-				# Nope no outbound allowed. Log it for possible debugging.
-				echo "$line is unable to send data; skipping.." >> $lootPath/log.txt
-			fi
+				targets=$newSubNet
+			fi	
 
 	        fi # end our test for lo
 
-	done # loop to the next interface in our list
+	done <<< "$iface"  # loop to gather IP addresses
+
+	# Clean up subnets to remove accidental double spaces.
+	echo "$targets" | awk '$1=$1' &> /dev/null
+
+	# Make sure we have at least something to scan.
+	if [ ! "$targets" ]; then
+		
+		echo "Could not accquire any IP addresses to scan." >> $lootPath/log.txt
+		exit 1
+
+	fi
+
+	# Add lo as some setups the loopback maybe the interface to send out traffic
+	# If user supplies default interface tie in their selection and disregard the
+	# auto locate data.
+	if [ ! "$defaultInterface" ]; then
+		interfaces+=$'\nlo'
+	else
+		interfaces=$defaultInterface
+	fi
+
+	# log subnets and ip addresses we found
+	echo "Subnets to scan $targets" >> $lootPath/log.txt
+	echo "IPs to scan $ipaddresses" >> $lootPath/log.txt
+
+	# Now lets find the interface that will allow outbound traffic on the LAN.
+	while IFS= read -r interface; do
+
+		# We will use the ip addresses we found to see if this interface can ping it.
+		while IFS= read -r ip; do
+
+			# If we can send ping packets then the interface is likley able to work with nmap
+			echo "ping -I $interface $ip -w 3"
+			if [[ ! $(ping -I $interface $ip -w 3 | grep '0 packets received') ]]; then
+			
+				# Make sure wee don't end up with a blank first line.
+				if [ "$goodInterface" ]; then
+
+					goodInterfaces+=$'\n'$interface
+				else
+					goodInterfaces=$interface
+				fi			
+			fi
+
+		done <<< "$ipaddresses" # end loop to find interfaces we can use
+
+	done <<< "$interfaces" # end loop to scan interfaces
+
+	# Log interfaces we can use
+	echo "Interfaces allowing outbound traffic: $goodInterface" >> $lootPath/log.txt
+
+	# Make sure we have interfaces that will allow outbound traffic.	
+	if [ "$goodInterfaces" ]; then	
+		while IFS= read -r goodInterface; do
+
+			# Finally! Lets run NMap!
+			nmap -Pn -e $goodInterface -sS -F -sV -oA $lootPath/$lootFileNameScheme -D RND:$rndDecoyNumber --randomize-hosts --spoof-mac $spoofDevType $targets >> $lootPath/log.txt
 	
+		done <<< "$goodInterfaces"
+
+	else
+		echo "Could not find any interfaces that will allow outbound traffic." >> $lootPath/log.txt
+		exit 1
+	fi
+
+
 	# Done scanning; clean up.
 	finish
 
