@@ -1,14 +1,22 @@
 Title:	     	NMap Dump
+
 Description:	Dumps NMap scan data to USB storage.
+
 Author: 		  infoskirmish.com
+
 Version:		  1.0
+
 Category:		  sniffing
+
 Target: 		  Any
+
 Net Mode:		  NAT
 
 LEDs
 SUCCESS:		Scan complete
+
 FAIL:			  No USB storage found
+
 SCANNING:		Rapid White
 
 This payload will launch NMap on a given interface (default eth0) and scan the local subnet. There is no need to know the subnet as the payload will capture and infer the subnet from the IP it receives while launching. 
