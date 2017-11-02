@@ -175,7 +175,7 @@ function run() {
 	done <<< "$interfaces" # end loop to scan interfaces
 
 	# Log interfaces we can use
-	echo "Interfaces allowing outbound traffic: $goodInterface" >> $lootPath/log.txt
+	echo "Interfaces allowing outbound traffic: $goodInterfaces" >> $lootPath/log.txt
 
 	# Make sure we have interfaces that will allow outbound traffic.	
 	if [ "$goodInterfaces" ]; then	
