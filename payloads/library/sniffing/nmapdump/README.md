@@ -1,4 +1,4 @@
-Title:	     	NMap Dump
+Title:	     	NMap Dump \n
 Description:	Dumps NMap scan data to USB storage.
 
 Author: 		  infoskirmish.com
