@@ -6,7 +6,7 @@
 # Version:		1.0
 # Category:		sniffing
 # Target: 		Any
-# Net Mode:		NAT
+# Net Mode:		Any (Transparent default)
 
 # LEDs
 # SUCCESS:		Scan complete
