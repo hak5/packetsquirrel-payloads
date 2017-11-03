@@ -26,9 +26,9 @@ This payload will automate gathering various recon data on whatever passes betwe
 
      The main variables are:
 
-          + lootPath="/mnt/loot/intel"	# Path to loot
-          + mode="TRANSPARENT"		# Network mode we want to use
-          + interface="br-lan"		# Interface to listen on
+          lootPath="/mnt/loot/intel"	# Path to loot
+          mode="TRANSPARENT"		     # Network mode we want to use
+          interface="br-lan"		     # Interface to listen on
 
 2) Copy payload.sh into the ~/payloads/switch<n> folder you wish to deploy on.
 
