@@ -11,9 +11,13 @@ import sys
 sys.path.append("/root/extensions")
 from sendemail import send_mail
 
-send_mail(sys.argv[1], sys.argv[2],
+if len(sys.argv) > 8:
+    send_mail(sys.argv[1], sys.argv[2],
                    sys.argv[3],
                    sys.argv[4],
-#                   files=sys.argv[8],
+                   server=sys.argv[5], username=sys.argv[6], password=sys.argv[7], files=[sys.argv[8]])
+else:
+    send_mail(sys.argv[1], sys.argv[2],
+                   sys.argv[3],
+                   sys.argv[4],
                    server=sys.argv[5], username=sys.argv[6], password=sys.argv[7])
-)
