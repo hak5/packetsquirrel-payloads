@@ -1,3 +1,11 @@
+# Title:	    Email-Sender
+# Description:  Allows sending emails to a mail server, with file support
+#               this is used coupled with the extension 
+# Author: 	    TheDragonkeeper
+# Version:	    1.0
+# Category:     exfiltration
+# Target: 	    Any
+
 import sys
 sys.path.append("/root/extensions")
 from sendemail.py import send_mail
