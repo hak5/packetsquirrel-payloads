@@ -8,7 +8,7 @@
 
 import sys
 sys.path.append("/root/extensions")
-from sendemail.py import send_mail
+from sendemail import send_mail
 
 send_mail('im-just-a-squirrel@giving-you-my-nuts.net', 'EmailTo@SendTo.net',
                    'You Got My Nuts',
