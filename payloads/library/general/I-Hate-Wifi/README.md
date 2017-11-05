@@ -9,8 +9,18 @@
 
 | Meaning   | Color             | Description                 |
 |:----------|:-----------------:|:----------------------------|
+| Waiting:  | Blinking yellow       | Waiting on network - getting requirements   |  
+| Failed:  | Flashing Red       | Failed to get package      |
 | Scanning:  | Green       | Scanning for Aps      |
 | Attacking:   | Red      | Deauthing targets   |
 | Done:   | Blue      | Sleeping   |
 
-Payload requires at least FW 1.1 and a supported usb wifi dongle
+| Requires   |
+|:----------|
+| Aircrack-ng  |
+| usb wifi dongle |
+| Fw 1.1 + |
+
+| Options | Line | Result  |
+|:----------|:----------|:----------|
+| YOUR_AP_MAC='' |   37  |Add your mac address to exclude your AP from attack |
