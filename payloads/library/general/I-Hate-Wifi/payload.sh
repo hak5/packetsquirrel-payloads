@@ -25,10 +25,15 @@ function attack() {
     attack
 }
 
-[[ -f '/usr/sbin/aireplay-ng' ]] || opkg install aircrack-ng
+if [ ! -f '/usr/sbin/aireplay-ng' ] ; then
+    LED STAGE1
+    NETMODE NAT
+    until ping -c 1 8.8.8.8 >/dev/null ; do : ; done 
+    opkg install aircrack-ng || LED FAIL
 
 LED SETUP
 AP_LIST=''
-YOUR_AP_MAC='something'
+############ You can change this Variable to allow your AP to not be targeted
+YOUR_AP_MAC='00:11:22:00:11:22'
 scan
 attack
