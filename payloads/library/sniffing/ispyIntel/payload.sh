@@ -24,7 +24,7 @@ urlsnifflog="urlsnarf_$Date.log"		# URLSniff log file name
 tcpdumplog="tcpdump_$Date.pcap"			# TCPDump log file name
 httppwdlog="httpPasswords_$Date.pcap"		# Potential HTTP password file name
 sessionidlog="sessionids_$Date.pcap"		# Potential Session IDs file name
-mailsnarfLog="mailsnarf_$Date.pcap"		# Mailsnarf data log file path.
+mailsnarfLog="mailsnarf_$Date.log"		# Mailsnarf data log file path.
 
 function monitor_space() {
 	while true
@@ -133,7 +133,7 @@ function run() {
 	echo "Session NGREP started pid=$sessiongrep" >> $lootPath/log.txt
 
 	# Log mailsnarf data
-	mailsnarf -i $interface -p $lootPath/$mailsnarflog &
+	mailsnarf -i $interface $lootPath/$mailsnarflog &
 	mailsnarfid=$!
 
 	# Log mailsnarf Start.
@@ -160,10 +160,14 @@ if [ -d "/mnt/loot" ]; then
     else
 
 	   # Interface could not be found; log it in ~/payload/switch1/log.txt
-	   echo "Could not load interface $interface. Stopping..." > log.txt
-
+       ifconfig > log.txt
+	   echo "Could not load interface $interface. Stopping..." >> log.txt
+       
+       
 	   # Display FAIL LED 
 	   LED FAIL
+       sync
+       halt
 
     fi
 
@@ -174,5 +178,7 @@ else
 
 	# Display FAIL LED 
 	LED FAIL
+    sync
+    halt
 
 fi
