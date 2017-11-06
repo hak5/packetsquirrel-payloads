@@ -18,7 +18,7 @@
 lootPath="/mnt/loot/intel"			# Path to loot
 mode="TRANSPARENT"				# Network mode we want to use
 interface="br-lan"				# Interface to listen on
-Date=(date +%Y-%m-%d-%H%M)			# Date format to use for log files
+Date=$(date +%Y-%m-%d-%H%M)			# Date format to use for log files
 dsnifflog="dsniff_$Date.log"			# DSNiff log file name
 urlsnifflog="urlsnarf_$Date.log"		# URLSniff log file name
 tcpdumplog="tcpdump_$Date.pcap"			# TCPDump log file name
