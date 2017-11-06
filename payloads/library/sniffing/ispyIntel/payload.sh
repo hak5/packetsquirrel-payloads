@@ -160,14 +160,13 @@ if [ -d "/mnt/loot" ]; then
     else
 
 	   # Interface could not be found; log it in ~/payload/switch1/log.txt
-       ifconfig > log.txt
+	   ifconfig > log.txt
 	   echo "Could not load interface $interface. Stopping..." >> log.txt
-       
-       
+   
 	   # Display FAIL LED 
 	   LED FAIL
-       sync
-       halt
+	   sync
+	   halt
 
     fi
 
@@ -178,7 +177,7 @@ else
 
 	# Display FAIL LED 
 	LED FAIL
-    sync
-    halt
+    	sync
+    	halt
 
 fi
