@@ -17,7 +17,7 @@
 
 lootPath="/mnt/loot/intel"			# Path to loot
 mode="TRANSPARENT"				# Network mode we want to use
-interface="br-lan"				# Interface to listen on
+interface="lo"				# Interface to listen on
 Date=$(date +%Y-%m-%d-%H%M)			# Date format to use for log files
 dsnifflog="dsniff_$Date.log"			# DSNiff log file name
 urlsnifflog="urlsnarf_$Date.log"		# URLSniff log file name
@@ -41,30 +41,35 @@ function monitor_space() {
 
 function finish() {
 
-	# Kill URLSnarff
+	# Kill URLSnarf
+	echo "URLSnarff ending pid=$1" >> $1/log.txt
 	kill $1
 	wait $1
 
-
 	# Kill DNSniff
+	echo "DNSniff ending pid=$2" >> $2/log.txt
 	kill $2
 	wait $2
 
 	# Kill TCPDump
+	echo "TCPDump ending pid=$3" >> $3/log.txt
 	kill $3
 	wait $3
 
 	# Kill HTTP Password NGREP
+	echo "HTTP Password NGREP ending pid=$4" >> $4/log.txt
 	kill $4
 	wait $4
 
 	# Kill Session NGREP
+	echo "HTTP Session NGREP ending pid=$5" >> $5/log.txt
 	kill $5
 	wait $5
-
-        # Kill Mail Snarf
-        kill $6
-        wait $6
+	
+	# Kill Mail Snarf
+	echo "Mail Snarf ending pid=$6" >> $6/log.txt
+	kill $6
+	wait $6
 
 	# I found that if this payload had been running awhile the next two steps may take a bit. It is useful to have some kind of indication
 	# that the payload accepted your button push and is responding. Thus the rapid white blink.
@@ -93,7 +98,7 @@ function run() {
 	mkdir -p $lootPath &> /dev/null
 
 	# Set networking to TRANSPARENT mode and wait five seconds
-	NETMODE $mode
+	NETMODE $mode >> $lootPath/log.txt
 	sleep 5
 
 	# Start tcpdump on the specified interface
@@ -160,13 +165,11 @@ if [ -d "/mnt/loot" ]; then
     else
 
 	   # Interface could not be found; log it in ~/payload/switch1/log.txt
-	   ifconfig > log.txt
-	   echo "Could not load interface $interface. Stopping..." >> log.txt
-   
+	   ifconfig > $lootPath/log.txt
+	   echo "Could not load interface $interface. Stopping..." >> $lootPath/log.txt
+       
 	   # Display FAIL LED 
 	   LED FAIL
-	   sync
-	   halt
 
     fi
 
@@ -177,7 +180,5 @@ else
 
 	# Display FAIL LED 
 	LED FAIL
-    	sync
-    	halt
 
 fi
