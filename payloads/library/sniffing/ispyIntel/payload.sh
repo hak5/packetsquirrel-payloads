@@ -84,7 +84,7 @@ function finish() {
 
 	# Halt the system; turn off LED
 	LED OFF
-	#halt
+	halt
 }
 
 function run() {
@@ -93,8 +93,8 @@ function run() {
 	mkdir -p $lootPath &> /dev/null
 
 	# Set networking to TRANSPARENT mode and wait five seconds
-	#NETMODE $mode
-	#sleep 5
+	NETMODE $mode
+	sleep 5
 
 	# Start tcpdump on the specified interface
 	tcpdump -i $interface -w $lootPath/$tcpdumplog &>/dev/null &
