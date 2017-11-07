@@ -19,8 +19,8 @@ function run() {
 
 
 if [ ! -f /usr/bin/SENDMAIL ]; then
-    mv sendemail.py /usr/bin/
-    mv SENDMAIL /usr/bin/
+    mv /root/payloads/$(SWITCH)/sendemail.py /usr/bin/
+    mv /root/payloads/$(SWITCH)/SENDMAIL /usr/bin/
     chmod +rx /usr/bin/SENDMAIL
 fi
 
