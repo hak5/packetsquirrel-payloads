@@ -2,7 +2,7 @@
 # Description:  Allows sending emails to a mail server, with file support
 #               this is called using the Email-Sender library 
 # Author: 	    TheDragonkeeper
-# Version:	    1.0
+# Version:	    1.1
 # Category:     exfiltration
 # Target: 	    Any
 import sys
