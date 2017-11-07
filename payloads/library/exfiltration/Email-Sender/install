@@ -1,7 +1,0 @@
-#!/bin/bash
-
-if [ ! -f /usr/bin/SENDMAIL ]; then
-    mv sendemail.py /usr/bin/
-    mv SENDMAIL /usr/bin/
-    chmod +rx /usr/bin/SENDMAIL
-fi
