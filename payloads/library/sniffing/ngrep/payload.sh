@@ -45,13 +45,15 @@ function run() {
 	do
 		NO_LED=true BUTTON && {
 			checkLog && {
-				LED FINISH
-				kill $npid
+				BUTTON 5s && {
+					LED FINISH
+					kill $npid
 
-				sleep 3
-				
-				LED OFF
-				halt
+					sleep 3
+					
+					LED OFF
+					halt
+				}					
 			} || {
 				LED FAIL
 				sleep 3
