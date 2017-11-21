@@ -4,6 +4,7 @@
 NGREP_OPTIONS=("-wiql" "user|pass" "port" "21")
 CONDITION=""
 WCNUM=3
+BUTTON_WAIT="5s"
 
 LOOT_DIR="/mnt/loot/ngrep"
 LOG_FILE="${LOOT_DIR}/ngrep-${RANDOM}.log"
@@ -45,13 +46,15 @@ function run() {
 	do
 		NO_LED=true BUTTON && {
 			checkLog && {
-				LED FINISH
-				kill $npid
+				BUTTON $BUTTON_WAIT && {
+					LED FINISH
+					kill $npid
 
-				sleep 3
-				
-				LED OFF
-				halt
+					sleep 3
+					
+					LED OFF
+					halt
+				}
 			} || {
 				LED FAIL
 				sleep 3
