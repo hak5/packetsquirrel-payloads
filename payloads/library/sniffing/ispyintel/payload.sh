@@ -97,10 +97,6 @@ function run() {
 	# Create loot directory
 	mkdir -p $lootPath &> /dev/null
 
-	# Set networking to TRANSPARENT mode and wait five seconds
-	NETMODE $mode >> $lootPath/log.txt
-	sleep 5
-
 	# Start tcpdump on the specified interface
 	tcpdump -i $interface -w $lootPath/$tcpdumplog &>/dev/null &
 	tpid=$!
@@ -153,6 +149,10 @@ function run() {
 # This payload will only run if we have USB storage
 if [ -d "/mnt/loot" ]; then
 
+    # Set networking to TRANSPARENT mode and wait five seconds
+    NETMODE $mode >> $lootPath/log.txt
+    sleep 5
+
     # Lets make sure the interface the user wanted actually exisits.
     if [[ $(ifconfig |grep $interface) ]]; then
 
@@ -165,7 +165,7 @@ if [ -d "/mnt/loot" ]; then
     else
 
 	   # Interface could not be found; log it in ~/payload/switch1/log.txt
-       ifconfig > $lootPath/log.txt
+       	   ifconfig > $lootPath/log.txt
 	   echo "Could not load interface $interface. Stopping..." >> $lootPath/log.txt
        
 	   # Display FAIL LED 
