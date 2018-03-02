@@ -16,6 +16,15 @@
 | FINISH      | Completed   |
 
 
-| Options | Line | Result  |
+| Options | Result  | Type |
 |:----------|:----------|:----------|
-| Set a single target or range of targets|   5  | Options explained in payload.sh |
+| Set a single target or range of targets  | Options line 5 in payload.sh | |
+|INTERFACE='eth0' | interface of the outgoing interface | str |
+|SINGLE='0' |  single target or range ( 1 or 0 ) | int |
+|TARGET='192.168.1.2' |  single target | str |
+|STARTRANGE='1'   |  ip range start | int |
+|ENDRANGE='255'   |  ip range end | int |
+
+If Option SINGLE is set to 1 then the value of TARGET is used
+if Option SINGLE is set to 0 then STARTRANGE and ENDRANGE is used 
+Give all Options a value regardless of the value of SINGLE
