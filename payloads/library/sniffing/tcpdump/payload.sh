@@ -49,7 +49,7 @@ function run() {
 	sleep 5
 	
 	# Start tcpdump on the bridge interface
-	tcpdump -i br-lan -w /mnt/loot/tcpdump/dump_$(date +%Y-%m-%d-%H%M%S).pcap &>/dev/null &
+	tcpdump -i br-lan -s 0 -w /mnt/loot/tcpdump/dump_$(date +%Y-%m-%d-%H%M%S).pcap &>/dev/null &
 	tpid=$!
 
 	# Wait for button to be pressed (disable button LED)
