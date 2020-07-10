@@ -54,5 +54,5 @@ function run() {
 	monitor_space $! &
 } || {
 	LED FAIL
-	NETMODE TRASPARENT
+	NETMODE TRANSPARENT
 }
