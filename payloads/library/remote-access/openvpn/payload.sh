@@ -30,9 +30,7 @@ function start() {
 
 	DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-	# Set NETMODE to BRIDGE and wait 3 seconds
-	# to ensure that things can settle
-
+	# Set NETMODE to BRIDGE and wait 3 seconds to ensure that things can settle
 	[[ "$FOR_CLIENTS" == "1" ]] && {
 		/usr/bin/NETMODE VPN
 	} || {
@@ -71,8 +69,8 @@ function start() {
 
 		# Determine which config to load next
 		configpath=$(uci get openvpn.vpn.config)
-		configfile=$(echo "${configpath}" | grep -Eo 'config[0-9]*')
-		confignumber=$(echo "${configfile}" | grep -Eo '[0-9]*')
+		configfile=$(echo "${configpath}" | grep -Eo "config[0-9]*")
+		confignumber=$(echo "${configfile}" | grep -Eo "[0-9]*")
 		if [ -z "${confignumber}" ]; then
 			confignumber="0"
 		fi
