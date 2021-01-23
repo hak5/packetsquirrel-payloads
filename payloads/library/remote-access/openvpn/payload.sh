@@ -1,16 +1,16 @@
 #!/bin/bash
 #
-# Title:		OpenVPN
-# Description:	Create a VPN connection to an OpenVPN server. Optionally, send
-# 				traffic from the clients through said tunnel.
-# Author: 		Hak5
-# Version:		1.1
-# Category: 	remote-access
-# Target: 		Any
-# Net Mode:		BRIDGE, VPN
+# Title:        OpenVPN
+# Description:  Create a VPN connection to an OpenVPN server. Optionally, send
+#               traffic from the clients through said tunnel.
+# Author:       Hak5
+# Version:      1.1
+# Category:     remote-access
+# Target:       Any
+# Net Mode:     BRIDGE, VPN
 
 # Set to 1 to allow clients to use the VPN
-FOR_CLIENTS=1
+FOR_CLIENTS=0
 
 DNS_SERVER="8.8.8.8"
 
