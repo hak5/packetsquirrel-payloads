@@ -60,6 +60,7 @@ function start() {
 	#
 	# If no numbered configs exist, the button functions as a way to reset the
 	# VPN connection.
+	next=1
 	while true; do
 		NO_LED=true BUTTON
 
@@ -68,21 +69,15 @@ function start() {
 		/etc/init.d/openvpn stop
 
 		# Determine which config to load next
-		configpath=$(uci get openvpn.vpn.config)
-		configfile=$(echo "${configpath}" | grep -Eo "config[0-9]*")
-		confignumber=$(echo "${configfile}" | grep -Eo "[0-9]*")
-		if [ -z "${confignumber}" ]; then
-			confignumber="0"
-		fi
-		nextconfignumber="$(($confignumber + 1))"
-		if [ -f "${DIR}/config${nextconfignumber}.ovpn" ]; then
-			uci set openvpn.vpn.config="${DIR}/config${nextconfignumber}.ovpn"
+		if [ -f "${DIR}/config${next}.ovpn" ]; then
+			uci set openvpn.vpn.config="${DIR}/config${next}.ovpn"
+			uci commit
+			next=$(($next + 1))
 		elif [ -f "${DIR}/config1.ovpn" ]; then
 			uci set openvpn.vpn.config="${DIR}/config1.ovpn"
-		else
-			uci set openvpn.vpn.config="${DIR}/config.ovpn"
+			uci commit
+			next=1
 		fi
-		uci commit
 
 		# Start openvpn and update the LED
 		/etc/init.d/openvpn start
