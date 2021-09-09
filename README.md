@@ -3,7 +3,7 @@
 
 This repository contains payloads and extensions for the Hak5 Packet Squirrel. Community developed payloads are listed and developers are encouraged to create pull requests to make changes to or submit new payloads.
 
-## About the Shark Jack
+## About the Packet Squirrel
 
 The Packet Squirrel by Hak5 is a stealthy pocket-sized man-in-the-middle.
 
