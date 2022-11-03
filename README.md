@@ -16,6 +16,9 @@ This Ethernet multi-tool is designed to give you covert remote access, painless 
 
 ![Packet Squirrel](https://cdn.shopify.com/s/files/1/0068/2142/products/Packet_Squirrel_300x.jpg)
 
+## Updating 
+If you've downloaded this repository via `git`, you can update to the latest versions of the payloads with `git pull`.  If you downloaded as a zip or other file, please download the latest from [github](https://github.com/hak5/packetsquirrel-payloads/).
+
 ## Disclaimer
 Generally, payloads may execute commands on your device. As such, it is possible for a payload to damage your device. Payloads from this repository are provided AS-IS without warranty. While Hak5 makes a best effort to review payloads, there are no guarantees as to their effectiveness. As with any script, you are advised to proceed with caution.
 
