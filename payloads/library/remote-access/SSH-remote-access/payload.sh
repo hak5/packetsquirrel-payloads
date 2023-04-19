@@ -2,10 +2,10 @@
 # Title: SSH Remote Management Tool for Packet Squirrel
 # Description: Makes packet Squirrel directly accessible via SSH on a remote server
 # Author: BlackPropaganda
-# Version: 0.1
+# Version: 0.5
 # Category: Remote-Access
 # Net Mode: NAT
-# Firmware: 1.2
+# Firmware: 3.0
 #
 # LED State Descriptions
 # Magenta Solid - SSH connecting
@@ -26,11 +26,13 @@ LED SETUP
 #
 # If this step fails, the payload will fail.
 
-autossh_host="root@165.233.121.2"
+autossh_host="root@<remote server IP>"
 autossh_host_ip=$(echo $autossh_host | cut -d '@' -f2)
 autossh_port="22"
 autossh_remoteport="2222"
 autossh_localport="22"
+switch=SWITCH
+interface="eth1"
 
 if ! grep $autossh_host_ip /root/.ssh/known_hosts; then
    echo "$autossh_host not in known_hosts, exiting..." >> /root/autossh.log
@@ -49,9 +51,9 @@ fi
 #
 
 # waiting until eth1 acquires IP address
-while ! ifconfig "eth1" | grep "inet addr"; do sleep 1; done
+while ! ifconfig "$interface" | grep "inet addr"; do sleep 1; done
 
-echo -e "starting server.\n" >> /root/payloads/switch3/debug.txt
+echo -e "starting server.\n" >> /root/payloads/$switch/debug.txt
 
 # starting sshd and waiting for process to start
 /etc/init.d/sshd start
