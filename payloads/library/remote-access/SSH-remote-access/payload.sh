@@ -9,7 +9,7 @@
 #
 # LED State Descriptions
 # Magenta Solid - SSH connecting
-# Amber - SSH connection successful
+# Amber - SSH connection attempted
 #
 
 NETMODE NAT
