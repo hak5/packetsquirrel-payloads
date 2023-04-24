@@ -5,7 +5,7 @@
 # Version: 0.5
 # Category: Remote-Access
 # Net Mode: NAT
-# Firmware: 3.0
+# Firmware: 3.2
 #
 # LED State Descriptions
 # Magenta Solid - SSH connecting
