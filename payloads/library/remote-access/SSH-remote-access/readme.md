@@ -35,6 +35,10 @@ targets.
 
 ---
 
+A good background for this payload is this video that Darren made doing this on the Lan Turtle:
+    https://www.youtube.com/watch?v=uIdvvrDrRj0
+
+
 This payload requires an SSH server be operational somewhere on the internet. Typically, a password
 is required to acquire shell access to these servers. This is a pain if you're trying to do everything
 automatically, so openssh allows for cryptographic pubkey authentication. More on this here: 
