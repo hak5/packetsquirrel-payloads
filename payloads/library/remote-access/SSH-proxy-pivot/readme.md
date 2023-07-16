@@ -1,4 +1,4 @@
-# Squirrel SSH Proxy Pivor
+# Squirrel SSH Proxy Pivot
 ___
 Have you ever laid down a Squirrel and thought 'darn I really want to pivot through this network, 
 but I left all my leet tools on my other machine.'
