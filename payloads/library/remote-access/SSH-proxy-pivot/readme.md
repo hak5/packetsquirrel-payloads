@@ -1,4 +1,4 @@
-# Squirrel SSH Proxy Pivor
+# Squirrel SSH Proxy Pivot
 ___
 Have you ever laid down a Squirrel and thought 'darn I really want to pivot through this network, 
 but I left all my leet tools on my other machine.'
@@ -23,7 +23,7 @@ For this payload to function properly, the following must be configured
 
 * SSH Key based Authentication
   * Remote SSH Host
-  * Packet Squirel
+  * Packet Squirrel
 * SSH Port forwarding
   * Both Hosts are required to support this
 
@@ -58,7 +58,7 @@ ___
 ### Initiating the Proxy Connection
 ___
 
-Copy the squirrel SSH key to the Remote SSH Server
+Copy the squirrel SSH key to the Remote SSH Server then connect to the squirrel
 
     ssh -L 1080:localhost:1080 $user@$remote_server_ip "ssh -i /home/sshuser/squirrel_rsa -p $lport_fwd_port -D 1080 root@127.0.0.1"
 
