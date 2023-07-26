@@ -82,12 +82,13 @@ This Ethernet multi-tool is designed to give you covert remote access, painless 
 
 <b>
 <div align="center">
-<a href="https://www.youtube.com/watch?v=rDdA4ggyc8E">Launch Video</a>
+<a href="https://www.youtube.com/watch?v=hN9tFx5N3uM">Launch Video</a>
+<br/>
 <br/>
 </div>
 </b>
 <p align="center">
-<a href="https://hak5.org/products/packet-squirrel"><img src="https://hak5.org/cdn/shop/products/Packet_Squirrel_2000x.jpg?v=1508535547"></a>
+<a href="https://hak5.org/products/packet-squirrel"><img src="https://3076592524-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F520JUF2JxB2RMXztRVAV%2Fuploads%2F6gSNjJNnaht6yMo5AMCg%2Fsquirrel-setup.png?alt=media&token=382e30a0-10c0-4ab0-88b4-db27e9331a23"></a>
 <br/><i>Hak5 Packet Squirrel Features</i>
 </p>
 <br/>
