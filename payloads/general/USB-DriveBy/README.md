@@ -4,15 +4,16 @@
 * Version: 1.0
 
 ### Description
-Use an USB storage device to deploy payloads on-demand while the Packe Squirrel is already set up and running.
+Use an USB storage device to deploy payloads on-demand while the Packet Squirrel is already set up and running.
 
 ### Setup
 1. Start your Packet Squirrel with the USB-DriveBy payload.
 2. Whenever you want to start any payload on-demand, place the payload file with the name `payload.txt` on any compatible USB storage device.
 3. When the LED lights up solid green, you can insert the USB storage into the Squirrel’s USB-A port whenever a new payload is needed.
+4. You can unplug your USB storage device at the moment your payload starts
 
 ### Tip: Add an LED indicator to your payloads to indicate that your payloads have finished.
-When finished, the USB-DriveBy payload will wait 10 seconds until it executes the script on your USB storage device again (if it is still present). This means that you should know when your payloads have finished and your USB storage device should be unplugged.
+When your payload is finished, the USB-DriveBy payload will wait 10 seconds until it executes the script on your USB storage device again (if it is still present). This means that you should know when your payloads have finished and your USB storage device should be unplugged at the latest.
 
 ### Status
 | LED | State |
