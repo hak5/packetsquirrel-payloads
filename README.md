@@ -15,7 +15,7 @@ This repository contains payloads and extensions for the Hak5 Packet Squirrel an
 <p align="center">
 <a href="https://payloadhub.com"><img src="https://cdn.shopify.com/s/files/1/0068/2142/files/payloadhub.png?v=1652474600"></a>
 <br/>
-<a href="https://hak5.org/blogs/payloads/tagged/packet-squirrel">View Featured Packet Squirrel Payloads and Leaderboard</a>
+<a href="https://payloadhub.com/blogs/payloads/tagged/packet-squirrel">View Featured Packet Squirrel Payloads and Leaderboard</a>
 <br/><i>Get your payload in front of thousands. Enter to win over $2,000 in prizes in the <a href="https://hak5.org/pages/payload-awards">Hak5 Payload Awards!</a></i>
 </p>
 
