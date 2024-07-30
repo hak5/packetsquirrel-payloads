@@ -3,9 +3,10 @@
 #### Author: 0i41E
 **AirBridge** is a payload designed for the [Packet Squirrel MK II](https://shop.hak5.org/products/packet-squirrel-mark-ii) in combination with Hak5's [MK7AC Module](https://shop.hak5.org/products/mk7ac-wifi-adapter), or similar WiFi adapters.
 It is meant to help users to overcome a potential airgapped network, by utilizing the WiFi adapter to connect to a nearby Station. 
-![airbridge](https://github.com/user-attachments/assets/592a7a8d-9a4e-4050-b04c-c7ff31480f2d)
 
-Since it'll start the SSH service, as well as the Web interface, users can then interact with the Squirrel as usual. C2 access or conection to a VPN are also possible afterwards.
+![impr-Squirrel](https://github.com/user-attachments/assets/199aa81c-f0bf-4aaf-a209-e132230cfb02)
+
+Since it'll start the SSH service, as well as the Web interface, users can then interact with the Squirrel as usual. C2 access or connection to a VPN are also possible afterwards.
 
 ## Preperation
 Before deploying the Squirrel as also the payload, the user has to update the system and install `usb_modeswitch`, as without it, the WiFi adpater will be identified as storage. For this step, internet access is required.
