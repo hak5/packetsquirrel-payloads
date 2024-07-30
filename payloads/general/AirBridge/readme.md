@@ -1,7 +1,7 @@
 
 # AirBridge
 #### Author: 0i41E
-**AirBridge** is a payload designed for the [Package Squirrel MK II](https://shop.hak5.org/products/packet-squirrel-mark-ii) in combination with Hak5's [MK7AC Module](https://shop.hak5.org/products/mk7ac-wifi-adapter), or similar WiFi adapters.
+**AirBridge** is a payload designed for the [Packet Squirrel MK II](https://shop.hak5.org/products/packet-squirrel-mark-ii) in combination with Hak5's [MK7AC Module](https://shop.hak5.org/products/mk7ac-wifi-adapter), or similar WiFi adapters.
 It is meant to help users to overcome a potential airgapped network, by utilizing the WiFi adapter to connect to a nearby Station. 
 ![airbridge](https://github.com/user-attachments/assets/592a7a8d-9a4e-4050-b04c-c7ff31480f2d)
 
