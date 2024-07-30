@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Title:        AirBridge
+# Author: 	0i41E
+#
+# Description: A payload to enable WiFi on the Squirrel, when a WiFi Adapter is attached.
+
+# Requirements beforehand: opkg update && opkg install usb-modeswitch, MK7AC Module or similar WiFi Adapter.
+# Usage: Connect with payload switch selected, and wait for the magenta LED, insert WiFi adapter, press button.
+
+# Set Network mode 
+NETMODE BRIDGE
+# Starting SSH & Web Interface
+SSH_START
+UI_START
+
+LED M FAST
+
+BUTTON
+
+LED G FAST
+
+SSID="<SSID>" # Station SSID
+PASSPHRASE="<Passphrase>" # Passphrase
+EXTERNAL_HOST="8.8.8.8" # Host to verify connection
+WLAN_INTERFACE="wlan0"
+
+# Removing old wpa_supplicant.conf file
+rm /etc/wpa_supplicant.conf
+
+# Check if wlan interface is up
+if ! ip link show $WLAN_INTERFACE | grep -q "state UP"; then
+    ip link set $WLAN_INTERFACE
+else
+    echo "$WLAN_INTERFACE is already up."
+fi
+
+# Create wpa_supplicant.conf file
+cat > /etc/wpa_supplicant.conf <<EOF
+ctrl_interface=/var/run/wpa_supplicant
+
+network={
+    ssid="$SSID"
+    psk="$PASSPHRASE"
+}
+EOF
+
+
+# Start wpa_supplicant
+wpa_supplicant -B -i "$WLAN_INTERFACE" -c /etc/wpa_supplicant.conf
+
+# Obtain IP address via DHCP
+udhcpc -i "$WLAN_INTERFACE"
+
+# Check connectivity to the external host
+if ping -c 1 $EXTERNAL_HOST; then
+    C2NOTIFY INFO AirBridge initiated!
+    LED G SOLID
+else
+    LED R SOLID
+fi
