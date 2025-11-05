@@ -78,6 +78,9 @@ root@squirrel:~# poweroff
 ## Usage
 
 Start your **Packet Squirrel Mark II** with the *Mode Switch* set to *switchX*.
+
 A new open Wi‑Fi network whose name corresponds to the value of the constant *EVIL_SSID* will appear.
+
 All HTTP requests sent by the client to the minimal web server will be stored in the *loots* directory.
+
 To properly stop the payload, press the button.
