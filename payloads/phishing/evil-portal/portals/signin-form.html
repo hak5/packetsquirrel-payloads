@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        section {
+            text-align: center;
+        }
+
+        form {
+            border-color: black;
+            border-radius: 10px;
+            border-style: solid;
+            border-width: 1px;
+            margin: 0 20% 0 20%;
+            padding: 2vh 0 0 0;
+        }
+
+        form div {
+            margin-bottom: 2vh;
+        }
+
+        form div input {
+            width: 60%;
+        }
+
+        form button {
+            margin-bottom: 2vh;
+        }
+
+        #authentication-failed {
+            border-color: red;
+            border-radius: 10px;
+            border-style: solid;
+            border-width: 1px;
+            color: red;
+            display: none;
+            margin: 0 auto 2vh auto;
+            padding: 0 1vw 0 1vw;
+            width: max-content;
+        }
+
+        /**
+         * Custom CSS goes here
+         */
+    </style>
+    <title>Evil Portal - Sign In</title>
+</head>
+<body>
+    <main>
+        <section>
+            <h1>Evil Portal</h1>
+            <form action="./?authentication-failed" method="POST">
+                <div>
+                    <input type="text" name="username" minlength="3" placeholder="john.doe" required="true">
+                </div>
+                <div>
+                    <input type="password" name="password" minlength="8" placeholder="********" required="true">
+                </div>
+                <button type="submit">Sign In</button>
+                <span id="authentication-failed">Authentication failed</span>
+            </form>
+        </section>
+    </main>
+    <script type="text/javascript">
+        const CURRENT_URL = new URL(window.location.href);
+        if (CURRENT_URL.search === '?authentication-failed') {
+            document.querySelector('#authentication-failed').style.display = 'block';
+        }
+
+        /**
+         * Custom JavaScript goes here
+         */
+    </script>
+</body>
+</html>
