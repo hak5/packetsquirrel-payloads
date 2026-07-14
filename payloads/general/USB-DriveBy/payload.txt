@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# Title: USB-DriveBy
+# Description: Use an USB storage device to deploy payloads on-demand
+# Author: 90N45
+# Version: 1.0
+# Category: General
+
+# Choose your preferred default network mode
+NETWORK_MODE="TRANSPARENT"
+
+LED SETUP
+
+NETMODE ${NETWORK_MODE}
+
+LED FINISH
+
+while true; do 
+	# Check for available USB storage
+	USB_STORAGE && {
+		# Check for available payload
+		if [ -f "/usb/payload.txt" ]; then
+    		# Run payload from USB storage
+			bash /usb/payload.txt
+			# Sleep to prevent triggering the payload twice unintended
+			sleep 10
+		else
+			# LED FAIL if file is not on USB storage
+			LED FAIL
+		fi
+	} || {
+		# Make sure to restore LED color if USB storage is detached after LED FAIL
+		LED G
+	}
+done
